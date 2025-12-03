@@ -44,9 +44,21 @@ void Renderer::Shutdown() {
 }
 
 void Renderer::BeginFrame() {
-    // Clear buffers
+    // Clear both color and depth buffers
     glClearColor(m_ClearColor.r, m_ClearColor.g, m_ClearColor.b, m_ClearColor.a);
+    glClearDepth(1.0); // Clear depth to far plane
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    // Configure OpenGL state for this frame
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    glDepthMask(GL_TRUE);
+    
+    // CRITICAL: Disable face culling to see both sides
+    glDisable(GL_CULL_FACE);
+    
+    // Disable blending (opaque rendering)
+    glDisable(GL_BLEND);
 }
 
 void Renderer::EndFrame() {

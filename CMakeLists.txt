@@ -20,7 +20,7 @@ find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(glm REQUIRED)
 
-# Source files
+# Source files  
 file(GLOB_RECURSE NILOS_SOURCES 
     "src/Core/*.cpp"
     "src/Rendering/*.cpp"
@@ -28,6 +28,11 @@ file(GLOB_RECURSE NILOS_SOURCES
     "src/Input/*.cpp"
     "src/Physics/*.cpp"
     "src/AI/*.cpp"
+)
+
+# Explicitly add debug renderer
+list(APPEND NILOS_SOURCES
+    "src/Rendering/DebugRenderer.cpp"
 )
 
 file(GLOB_RECURSE NILOS_HEADERS 

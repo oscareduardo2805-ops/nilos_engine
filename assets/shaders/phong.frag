@@ -26,19 +26,25 @@ uniform sampler2D uDiffuseMap;
 uniform bool uUseDiffuseMap;
 
 void main() {
-    // Normalize normal
+    // Normalize normal (flip if facing away for two-sided lighting)
     vec3 norm = normalize(Normal);
+    
+    // Two-sided lighting: flip normal if facing away from camera
+    vec3 viewDir = normalize(uViewPos - FragPos);
+    if (dot(norm, viewDir) < 0.0) {
+        norm = -norm; // Flip normal for back faces
+    }
+    
     vec3 lightDir = normalize(-uLightDir);
     
     // Ambient
     vec3 ambient = uAmbientLight;
     
-    // Diffuse
-    float diff = max(dot(norm, lightDir), 0.0);
+    // Diffuse (use abs to ensure both sides are lit)
+    float diff = abs(dot(norm, lightDir));
     vec3 diffuse = diff * uLightColor * uLightIntensity;
     
     // Specular (Blinn-Phong for better performance)
-    vec3 viewDir = normalize(uViewPos - FragPos);
     vec3 halfwayDir = normalize(lightDir + viewDir);
     float spec = pow(max(dot(norm, halfwayDir), 0.0), uMaterialShininess);
     vec3 specular = spec * uMaterialSpecular * uLightColor;

@@ -225,13 +225,8 @@ void Engine::Update(float deltaTime) {
         camera->UpdateVectors();
     }
 
-    // Rotate the demo cube
-    auto* cubeTransform = m_World->GetComponent<TransformComponent>(m_CubeEntity);
-    if (cubeTransform) {
-        float rotationSpeed = 45.0f; // degrees per second
-        cubeTransform->Rotation.y += rotationSpeed * deltaTime;
-        cubeTransform->Rotation.x += rotationSpeed * 0.5f * deltaTime;
-    }
+    // No automatic rotation - objects only move with physics
+    // Physical objects are controlled by RigidbodyComponent
 }
 
 void Engine::Render() {
@@ -293,37 +288,98 @@ void Engine::SetupDemoScene() {
     cameraComponent->Near = 0.1f;
     cameraComponent->Far = 100.0f;
 
-    // Create center cube (rotating to show lighting)
-    m_CubeEntity = m_World->CreateEntity("DemoCube");
-    
-    auto* cubeTransform = m_World->AddComponent<TransformComponent>(m_CubeEntity);
-    cubeTransform->Position = glm::vec3(0.0f, 0.0f, 0.0f);
-    cubeTransform->Scale = glm::vec3(1.5f);
-    
-    auto* cubeMesh = m_World->AddComponent<MeshComponent>(m_CubeEntity);
-    cubeMesh->CreateCube();
-    
-    // Add more cubes to showcase lighting
-    Entity leftCube = m_World->CreateEntity("LeftCube");
-    auto* leftTransform = m_World->AddComponent<TransformComponent>(leftCube);
-    leftTransform->Position = glm::vec3(-3.5f, 0.0f, -1.0f);
-    leftTransform->Scale = glm::vec3(1.0f);
-    m_World->AddComponent<MeshComponent>(leftCube)->CreateCube();
-    
-    Entity rightCube = m_World->CreateEntity("RightCube");
-    auto* rightTransform = m_World->AddComponent<TransformComponent>(rightCube);
-    rightTransform->Position = glm::vec3(3.5f, 0.0f, -1.0f);
-    rightTransform->Scale = glm::vec3(1.0f);
-    m_World->AddComponent<MeshComponent>(rightCube)->CreateCube();
-    
-    // Ground plane (to see shadows effect)
+    // ========================================
+    // GROUND (Static - Earth simulation with depth)
+    // ========================================
     Entity ground = m_World->CreateEntity("Ground");
     auto* groundTransform = m_World->AddComponent<TransformComponent>(ground);
-    groundTransform->Position = glm::vec3(0.0f, -2.5f, 0.0f);
-    groundTransform->Scale = glm::vec3(15.0f, 0.2f, 15.0f);
-    m_World->AddComponent<MeshComponent>(ground)->CreateCube();
+    groundTransform->Position = glm::vec3(0.0f, -2.0f, 0.0f); // 2m below surface
+    groundTransform->Scale = glm::vec3(1000.0f, 4.0f, 1000.0f); // 1km x 4m deep x 1km
     
-    NILOS_INFO("Phase 2 demo scene created with Phong lighting!");
+    auto* groundMesh = m_World->AddComponent<MeshComponent>(ground);
+    groundMesh->CreateCube();
+    
+    auto* groundCollider = m_World->AddComponent<ColliderComponent>(ground);
+    groundCollider->ColliderType = ColliderComponent::Type::Box;
+    groundCollider->Size = glm::vec3(1.0f); // Will be scaled by transform
+    
+    // Ground is static (never moves)
+    m_PhysicsWorld->RegisterStaticCollider(groundCollider, groundTransform);
+    
+    // ========================================
+    // BASKETBALL (Dynamic - Falls with realistic physics)
+    // ========================================
+    Entity basketball = m_World->CreateEntity("Basketball");
+    auto* ballTransform = m_World->AddComponent<TransformComponent>(basketball);
+    ballTransform->Position = glm::vec3(0.0f, 5.0f, 0.0f); // 5 meters high
+    ballTransform->Scale = glm::vec3(0.24f); // Basketball diameter 24cm
+    
+    auto* ballMesh = m_World->AddComponent<MeshComponent>(basketball);
+    ballMesh->CreateSphere(0.5f, 32, 16);
+    
+    auto* ballRB = m_World->AddComponent<RigidbodyComponent>(basketball);
+    ballRB->SetMass(0.62f); // Basketball mass: 620 grams
+    ballRB->UseGravity = true;
+    ballRB->Restitution = 0.75f; // Basketball bounce
+    ballRB->DynamicFriction = 0.3f;
+    ballRB->StaticFriction = 0.5f;
+    
+    auto* ballCollider = m_World->AddComponent<ColliderComponent>(basketball);
+    ballCollider->ColliderType = ColliderComponent::Type::Sphere;
+    ballCollider->Radius = 0.12f;
+    ballCollider->Size = glm::vec3(0.24f);
+    
+    m_PhysicsWorld->RegisterRigidbody(ballRB, ballCollider, ballTransform);
+    
+    // ========================================
+    // LEFT CUBE (Dynamic - Falls from 3m)
+    // ========================================
+    Entity leftCube = m_World->CreateEntity("LeftCube");
+    auto* leftTransform = m_World->AddComponent<TransformComponent>(leftCube);
+    leftTransform->Position = glm::vec3(-3.0f, 3.0f, 0.0f); // 3m high
+    leftTransform->Scale = glm::vec3(1.0f);
+    
+    m_World->AddComponent<MeshComponent>(leftCube)->CreateCube();
+    
+    auto* leftRB = m_World->AddComponent<RigidbodyComponent>(leftCube);
+    leftRB->SetMass(10.0f); // 10 kg wooden crate
+    leftRB->UseGravity = true;
+    leftRB->Restitution = 0.3f; // Less bouncy than basketball
+    leftRB->DynamicFriction = 0.5f;
+    
+    auto* leftCollider = m_World->AddComponent<ColliderComponent>(leftCube);
+    leftCollider->Size = glm::vec3(1.0f);
+    
+    m_PhysicsWorld->RegisterRigidbody(leftRB, leftCollider, leftTransform);
+    
+    // ========================================
+    // RIGHT CUBE (Dynamic - Falls from 4m)
+    // ========================================
+    Entity rightCube = m_World->CreateEntity("RightCube");
+    auto* rightTransform = m_World->AddComponent<TransformComponent>(rightCube);
+    rightTransform->Position = glm::vec3(3.0f, 4.0f, 0.0f); // 4m high
+    rightTransform->Scale = glm::vec3(1.0f);
+    
+    m_World->AddComponent<MeshComponent>(rightCube)->CreateCube();
+    
+    auto* rightRB = m_World->AddComponent<RigidbodyComponent>(rightCube);
+    rightRB->SetMass(10.0f);
+    rightRB->UseGravity = true;
+    rightRB->Restitution = 0.3f;
+    rightRB->DynamicFriction = 0.5f;
+    
+    auto* rightCollider = m_World->AddComponent<ColliderComponent>(rightCube);
+    rightCollider->Size = glm::vec3(1.0f);
+    
+    m_PhysicsWorld->RegisterRigidbody(rightRB, rightCollider, rightTransform);
+    
+    // Center cube is now the demo cube entity
+    m_CubeEntity = leftCube;
+    
+    NILOS_INFO("Realistic physics scene created:");
+    NILOS_INFO("  - Ground: 1km² x 4m deep (static)");
+    NILOS_INFO("  - Basketball: 0.62kg at 5m (bounces 0.75)");
+    NILOS_INFO("  - Cubes: 10kg at 3-4m (bounces 0.3)");
 }
 
 } // namespace Nilos

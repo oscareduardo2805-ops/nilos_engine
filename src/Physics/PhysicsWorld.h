@@ -4,8 +4,10 @@
 #include "../ECS/Component.h"
 #include "../ECS/Entity.h"
 #include <vector>
+#include <cstdint>
 
 namespace Nilos {
+
 
 /**
  * @brief Simple physics world - AABB collisions and gravity
@@ -24,9 +26,14 @@ public:
     void Update(float deltaTime);
 
     /**
-     * @brief Register a collider component
+     * @brief Register a rigidbody for physics simulation
      */
-    void RegisterCollider(ColliderComponent* collider, TransformComponent* transform);
+    void RegisterRigidbody(RigidbodyComponent* rb, ColliderComponent* collider, TransformComponent* transform);
+    
+    /**
+     * @brief Register a static collider (no rigidbody, never moves)
+     */
+    void RegisterStaticCollider(ColliderComponent* collider, TransformComponent* transform);
 
     /**
      * @brief Check collision between two AABBs
@@ -51,13 +58,21 @@ public:
     void Clear();
 
 private:
-    struct ColliderEntry {
+    struct RigidbodyEntry {
+        RigidbodyComponent* Rigidbody;
         ColliderComponent* Collider;
         TransformComponent* Transform;
-        Entity EntityID;
+        uint32_t EntityID;
+    };
+    
+    struct StaticColliderEntry {
+        ColliderComponent* Collider;
+        TransformComponent* Transform;
+        uint32_t EntityID;
     };
 
-    std::vector<ColliderEntry> m_Colliders;
+    std::vector<RigidbodyEntry> m_Rigidbodies;
+    std::vector<StaticColliderEntry> m_StaticColliders;
     glm::vec3 m_Gravity = glm::vec3(0.0f, -9.81f, 0.0f);
 
     /**

@@ -74,56 +74,119 @@ struct MeshComponent {
     uint32_t MaterialID = 0; // Optional material reference
 
     /**
-     * @brief Create a simple cube mesh with normals
+     * @brief Create a simple cube mesh with normals (corrected geometry)
      */
     void CreateCube() {
         // Cube with Position(3) + Normal(3) + Color(3) + TexCoord(2) = 11 floats per vertex
+        // All vertices use same color for solid appearance
         Vertices = {
-            // Front face (normal = +Z)
-            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f,  0.8f, 0.2f, 0.2f,  0.0f, 0.0f,
-             0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f,  0.8f, 0.2f, 0.2f,  1.0f, 0.0f,
-             0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f,  0.8f, 0.2f, 0.2f,  1.0f, 1.0f,
-            -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f,  0.8f, 0.2f, 0.2f,  0.0f, 1.0f,
+            // Front face (+Z) - RED
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f,  0.8f, 0.3f, 0.3f,  0.0f, 0.0f,
+             0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f,  0.8f, 0.3f, 0.3f,  1.0f, 0.0f,
+             0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f,  0.8f, 0.3f, 0.3f,  1.0f, 1.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f,  0.8f, 0.3f, 0.3f,  0.0f, 1.0f,
             
-            // Back face (normal = -Z)
-             0.5f, -0.5f, -0.5f,  0.0f, 0.0f, -1.0f,  0.2f, 0.8f, 0.2f,  0.0f, 0.0f,
-            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, -1.0f,  0.2f, 0.8f, 0.2f,  1.0f, 0.0f,
-            -0.5f,  0.5f, -0.5f,  0.0f, 0.0f, -1.0f,  0.2f, 0.8f, 0.2f,  1.0f, 1.0f,
-             0.5f,  0.5f, -0.5f,  0.0f, 0.0f, -1.0f,  0.2f, 0.8f, 0.2f,  0.0f, 1.0f,
+            // Back face (-Z) - GREEN
+            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, -1.0f,  0.3f, 0.8f, 0.3f,  0.0f, 0.0f,
+             0.5f, -0.5f, -0.5f,  0.0f, 0.0f, -1.0f,  0.3f, 0.8f, 0.3f,  1.0f, 0.0f,
+             0.5f,  0.5f, -0.5f,  0.0f, 0.0f, -1.0f,  0.3f, 0.8f, 0.3f,  1.0f, 1.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f, 0.0f, -1.0f,  0.3f, 0.8f, 0.3f,  0.0f, 1.0f,
             
-            // Top face (normal = +Y)
-            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f,  0.2f, 0.2f, 0.8f,  0.0f, 0.0f,
-             0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f,  0.2f, 0.2f, 0.8f,  1.0f, 0.0f,
-             0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,  0.2f, 0.2f, 0.8f,  1.0f, 1.0f,
-            -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,  0.2f, 0.2f, 0.8f,  0.0f, 1.0f,
+            // Top face (+Y) - BLUE
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f,  0.3f, 0.3f, 0.8f,  0.0f, 0.0f,
+             0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f,  0.3f, 0.3f, 0.8f,  1.0f, 0.0f,
+             0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,  0.3f, 0.3f, 0.8f,  1.0f, 1.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,  0.3f, 0.3f, 0.8f,  0.0f, 1.0f,
             
-            // Bottom face (normal = -Y)
-            -0.5f, -0.5f,  0.5f,  0.0f, -1.0f, 0.0f,  0.8f, 0.8f, 0.2f,  0.0f, 0.0f,
-             0.5f, -0.5f,  0.5f,  0.0f, -1.0f, 0.0f,  0.8f, 0.8f, 0.2f,  1.0f, 0.0f,
-             0.5f, -0.5f, -0.5f,  0.0f, -1.0f, 0.0f,  0.8f, 0.8f, 0.2f,  1.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f,  0.0f, -1.0f, 0.0f,  0.8f, 0.8f, 0.2f,  0.0f, 1.0f,
+            // Bottom face (-Y) - YELLOW
+            -0.5f, -0.5f, -0.5f,  0.0f, -1.0f, 0.0f,  0.8f, 0.8f, 0.3f,  0.0f, 0.0f,
+             0.5f, -0.5f, -0.5f,  0.0f, -1.0f, 0.0f,  0.8f, 0.8f, 0.3f,  1.0f, 0.0f,
+             0.5f, -0.5f,  0.5f,  0.0f, -1.0f, 0.0f,  0.8f, 0.8f, 0.3f,  1.0f, 1.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, -1.0f, 0.0f,  0.8f, 0.8f, 0.3f,  0.0f, 1.0f,
             
-            // Right face (normal = +X)
-             0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f,  0.8f, 0.2f, 0.8f,  0.0f, 0.0f,
-             0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,  0.8f, 0.2f, 0.8f,  1.0f, 0.0f,
-             0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,  0.8f, 0.2f, 0.8f,  1.0f, 1.0f,
-             0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,  0.8f, 0.2f, 0.8f,  0.0f, 1.0f,
+            // Right face (+X) - MAGENTA
+             0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,  0.8f, 0.3f, 0.8f,  0.0f, 0.0f,
+             0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,  0.8f, 0.3f, 0.8f,  1.0f, 0.0f,
+             0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,  0.8f, 0.3f, 0.8f,  1.0f, 1.0f,
+             0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f,  0.8f, 0.3f, 0.8f,  0.0f, 1.0f,
             
-            // Left face (normal = -X)
-            -0.5f, -0.5f, -0.5f,  -1.0f, 0.0f, 0.0f,  0.2f, 0.8f, 0.8f,  0.0f, 0.0f,
-            -0.5f,  0.5f, -0.5f,  -1.0f, 0.0f, 0.0f,  0.2f, 0.8f, 0.8f,  1.0f, 0.0f,
-            -0.5f,  0.5f,  0.5f,  -1.0f, 0.0f, 0.0f,  0.2f, 0.8f, 0.8f,  1.0f, 1.0f,
-            -0.5f, -0.5f,  0.5f,  -1.0f, 0.0f, 0.0f,  0.2f, 0.8f, 0.8f,  0.0f, 1.0f,
+            // Left face (-X) - CYAN
+            -0.5f, -0.5f, -0.5f,  -1.0f, 0.0f, 0.0f,  0.3f, 0.8f, 0.8f,  0.0f, 0.0f,
+            -0.5f,  0.5f, -0.5f,  -1.0f, 0.0f, 0.0f,  0.3f, 0.8f, 0.8f,  1.0f, 0.0f,
+            -0.5f,  0.5f,  0.5f,  -1.0f, 0.0f, 0.0f,  0.3f, 0.8f, 0.8f,  1.0f, 1.0f,
+            -0.5f, -0.5f,  0.5f,  -1.0f, 0.0f, 0.0f,  0.3f, 0.8f, 0.8f,  0.0f, 1.0f,
         };
 
         Indices = {
-            0,  1,  2,   2,  3,  0,   // Front
+            0,  1,  2,   2,  3,  0,   // Front (CCW from outside)
             4,  5,  6,   6,  7,  4,   // Back
             8,  9, 10,  10, 11,  8,   // Top
             12, 13, 14,  14, 15, 12,  // Bottom
             16, 17, 18,  18, 19, 16,  // Right
             20, 21, 22,  22, 23, 20   // Left
         };
+    }
+
+    /**
+     * @brief Create a sphere mesh (UV sphere)
+     * @param radius Sphere radius
+     * @param segments Horizontal segments (longitude)
+     * @param rings Vertical rings (latitude)
+     */
+    void CreateSphere(float radius = 0.5f, int segments = 32, int rings = 16) {
+        Vertices.clear();
+        Indices.clear();
+        
+        // Generate vertices
+        for (int ring = 0; ring <= rings; ++ring) {
+            float v = (float)ring / (float)rings;
+            float phi = v * glm::pi<float>();
+            
+            for (int seg = 0; seg <= segments; ++seg) {
+                float u = (float)seg / (float)segments;
+                float theta = u * 2.0f * glm::pi<float>();
+                
+                // Position
+                float x = radius * sin(phi) * cos(theta);
+                float y = radius * cos(phi);
+                float z = radius * sin(phi) * sin(theta);
+                
+                // Normal (normalized position for sphere)
+                float nx = sin(phi) * cos(theta);
+                float ny = cos(phi);
+                float nz = sin(phi) * sin(theta);
+                
+                // Color (orange for basketball)
+                float r = 0.9f, g = 0.5f, b = 0.2f;
+                
+                // UV coordinates
+                float tu = u;
+                float tv = v;
+                
+                // Add vertex: Position(3) + Normal(3) + Color(3) + TexCoord(2)
+                Vertices.push_back(x); Vertices.push_back(y); Vertices.push_back(z);
+                Vertices.push_back(nx); Vertices.push_back(ny); Vertices.push_back(nz);
+                Vertices.push_back(r); Vertices.push_back(g); Vertices.push_back(b);
+                Vertices.push_back(tu); Vertices.push_back(tv);
+            }
+        }
+        
+        // Generate indices
+        for (int ring = 0; ring < rings; ++ring) {
+            for (int seg = 0; seg < segments; ++seg) {
+                int current = ring * (segments + 1) + seg;
+                int next = current + segments + 1;
+                
+                // Two triangles per quad
+                Indices.push_back(current);
+                Indices.push_back(next);
+                Indices.push_back(current + 1);
+                
+                Indices.push_back(current + 1);
+                Indices.push_back(next);
+                Indices.push_back(next + 1);
+            }
+        }
     }
 
     /**
@@ -196,16 +259,61 @@ struct CameraComponent {
 // ============================================================================
 
 /**
- * @brief Rigidbody component for physics simulation
+ * @brief Rigidbody component - realistic physics simulation
+ * 
+ * PRIMARY physics component for all physical objects.
+ * Simulates real-world physics: gravity, forces, collisions, friction.
  */
 struct RigidbodyComponent {
-    glm::vec3 Velocity = glm::vec3(0.0f);
-    glm::vec3 AngularVelocity = glm::vec3(0.0f);
-    float Mass = 1.0f;
-    float Drag = 0.1f;
-    float AngularDrag = 0.05f;
-    bool UseGravity = true;
-    bool IsKinematic = false; // If true, not affected by forces
+    // Mass properties
+    float Mass = 1.0f;                    // kg
+    float InverseMass = 1.0f;             // 1/Mass (computed)
+    
+    // Linear motion
+    glm::vec3 Velocity = glm::vec3(0.0f); // m/s
+    glm::vec3 Force = glm::vec3(0.0f);    // Accumulated forces
+    
+    // Angular motion
+    glm::vec3 AngularVelocity = glm::vec3(0.0f); // rad/s
+    glm::vec3 Torque = glm::vec3(0.0f);          // Accumulated torques
+    
+    // Material properties
+    float Restitution = 0.5f;             // Bounciness (0-1)
+    float StaticFriction = 0.6f;          // Friction when not moving
+    float DynamicFriction = 0.4f;         // Friction when moving
+    
+    // Damping (air resistance)
+    float LinearDamping = 0.01f;          // Velocity decay
+    float AngularDamping = 0.05f;         // Angular velocity decay
+    
+    // Flags
+    bool UseGravity = true;               // Affected by gravity?
+    bool IsKinematic = false;             // Moves but ignores forces (for platforms, etc.)
+    bool IsStatic = false;                // Never moves (for walls, ground)
+    
+    RigidbodyComponent() {
+        UpdateInverseMass();
+    }
+    
+    void SetMass(float mass) {
+        Mass = mass;
+        UpdateInverseMass();
+    }
+    
+    void UpdateInverseMass() {
+        InverseMass = (Mass > 0.0f) ? (1.0f / Mass) : 0.0f;
+    }
+    
+    void AddForce(const glm::vec3& force) {
+        if (!IsKinematic && !IsStatic) {
+            Force += force;
+        }
+    }
+    
+    void ClearForces() {
+        Force = glm::vec3(0.0f);
+        Torque = glm::vec3(0.0f);
+    }
 };
 
 /**
@@ -225,6 +333,11 @@ struct ColliderComponent {
     float Radius = 0.5f;                  // For sphere/capsule
     float Height = 2.0f;                  // For capsule
     bool IsTrigger = false;               // Trigger vs solid collider
+    
+    // Physics properties (Phase 3)
+    glm::vec3 Velocity = glm::vec3(0.0f); // Linear velocity
+    bool IsDynamic = false;               // Affected by physics?
+    float Restitution = 0.75f;            // Bounce coefficient (0-1)
 };
 
 // ============================================================================
