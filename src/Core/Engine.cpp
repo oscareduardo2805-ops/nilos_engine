@@ -298,12 +298,13 @@ void Engine::SetupDemoScene() {
     cameraComponent->Far = 2000.0f;     // Far enough to see 1km plane
 
     // ========================================
-    // GROUND (Static - Earth simulation with depth)
+    // GROUND (Static - Thin platform at Y=0)
     // ========================================
     Entity ground = m_World->CreateEntity("Ground");
     auto* groundTransform = m_World->AddComponent<TransformComponent>(ground);
-    groundTransform->Position = glm::vec3(0.0f, -2.0f, 0.0f); // 2m below surface
-    groundTransform->Scale = glm::vec3(1000.0f, 4.0f, 1000.0f); // 1km x 4m deep x 1km
+    // Make ground THIN (0.1m thick) with top surface exactly at Y=0
+    groundTransform->Position = glm::vec3(0.0f, -0.05f, 0.0f); // Center at -0.05m (top at Y=0)
+    groundTransform->Scale = glm::vec3(1000.0f, 0.1f, 1000.0f); // 1km x 0.1m x 1km
     
     auto* groundMesh = m_World->AddComponent<MeshComponent>(ground);
     groundMesh->CreateCube();
@@ -316,6 +317,8 @@ void Engine::SetupDemoScene() {
     
     // Ground is static (never moves)
     m_PhysicsWorld->RegisterStaticCollider(groundCollider, groundTransform);
+    
+    NILOS_INFO("Ground platform: 1km² x 10cm thick, surface at Y=0");
     
     // ========================================
     // BASKETBALL (Dynamic - Falls with realistic physics)
@@ -390,9 +393,10 @@ void Engine::SetupDemoScene() {
     m_CubeEntity = leftCube;
     
     NILOS_INFO("Realistic physics scene created:");
-    NILOS_INFO("  - Ground: 1km² x 4m deep (static)");
+    NILOS_INFO("  - Ground: 1km² x 10cm platform at Y=0 (static)");
     NILOS_INFO("  - Basketball: 0.62kg at 5m (bounces 0.75)");
     NILOS_INFO("  - Cubes: 10kg at 3-4m (bounces 0.3)");
+    NILOS_INFO("Tip: Fly below Y=0 to verify objects don't penetrate ground!");
 }
 
 } // namespace Nilos
