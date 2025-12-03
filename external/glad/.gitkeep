@@ -1,0 +1,18 @@
+# GLAD Directory
+
+Place GLAD generated files here.
+
+Expected structure:
+```
+glad/
+├── include/
+│   ├── glad/
+│   │   └── glad.h
+│   └── KHR/
+│       └── khrplatform.h
+└── src/
+    └── glad.c
+```
+
+See `GLAD_SETUP.md` for instructions.
+

@@ -1,0 +1,8 @@
+# Ignore generated GLAD files (users should generate their own)
+include/
+src/
+
+# Keep the .gitkeep to preserve directory structure
+!.gitkeep
+!.gitignore
+

@@ -1,0 +1,71 @@
+# Build directories
+build/
+bin/
+lib/
+out/
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+!CMakeLists.txt
+
+# Visual Studio
+.vs/
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.sln
+*.suo
+*.user
+*.aps
+
+# VS Code (keep tasks and launch for dev)
+.vscode/*
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/settings.json
+
+# Compiled files
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.dylib
+*.a
+*.lib
+
+# IDE specific
+.idea/
+*.iml
+*.swp
+*.swo
+*~
+
+# OS specific
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+
+# GLAD (keep structure, regenerate files)
+external/glad/include/
+external/glad/src/
+
+# Third-party libraries (if using git submodules or manual downloads)
+external/glfw/
+external/glm/
+
+# Asset cache (if implemented in future)
+assets/.cache/
+*.asset_cache
+
+# Temporary files
+glad_download.zip
+glad_extracted/
+setup_glad_manual.ps1
