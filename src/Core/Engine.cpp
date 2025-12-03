@@ -326,8 +326,8 @@ void Engine::SetupDemoScene() {
     
     auto* ballCollider = m_World->AddComponent<ColliderComponent>(basketball);
     ballCollider->ColliderType = ColliderComponent::Type::Sphere;
-    ballCollider->Radius = 0.12f;
-    ballCollider->Size = glm::vec3(0.24f);
+    ballCollider->Radius = 0.5f; // Sphere mesh is 0.5 radius, scaled by transform (0.24)
+    // Note: Size is ignored for spheres, only Radius is used
     
     m_PhysicsWorld->RegisterRigidbody(ballRB, ballCollider, ballTransform);
     

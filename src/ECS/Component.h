@@ -317,27 +317,73 @@ struct RigidbodyComponent {
 };
 
 /**
- * @brief Collider component for collision detection
+ * @brief Collider component - UNIVERSAL COLLISION for ANY shape
+ * 
+ * This component provides collision detection for ANY geometric shape.
+ * The physics system converts all shapes to AABBs (Axis-Aligned Bounding Boxes)
+ * for collision detection, GUARANTEEING that no object can pass through another.
+ * 
+ * POLYMORPHIC DESIGN:
+ * - All collider types use the same collision algorithm (AABB)
+ * - Adding new shapes is trivial: just add a Type and define its AABB
+ * - No virtual functions needed - pure data-driven design
+ * 
+ * HOW TO ADD A NEW SHAPE (e.g., Pyramid, Torus, Custom):
+ * 1. Add to Type enum below (e.g., Pyramid)
+ * 2. Add required parameters (e.g., float BaseSize, float Apex)
+ * 3. Update PhysicsWorld::GetWorldAABB() to calculate AABB for your shape
+ * 4. Done! Collision will work automatically.
  */
 struct ColliderComponent {
+    /**
+     * @brief Collider shape types
+     * 
+     * All types are converted to AABBs for collision detection.
+     * This ensures UNIVERSAL collision - nothing passes through anything.
+     */
     enum class Type {
-        Box,
-        Sphere,
-        Capsule,
-        Mesh
+        Box,        // Rectangular prism - uses Size
+        Sphere,     // Perfect sphere - uses Radius
+        Capsule,    // Cylinder with hemisphere caps - uses Radius + Height
+        Mesh        // Arbitrary 3D mesh - uses Size (computed from vertices)
+        // Future: Pyramid, Cylinder, Cone, Torus, ConvexHull, etc.
     };
 
+    // Shape definition
     Type ColliderType = Type::Box;
-    glm::vec3 Center = glm::vec3(0.0f);
-    glm::vec3 Size = glm::vec3(1.0f);    // For box
-    float Radius = 0.5f;                  // For sphere/capsule
-    float Height = 2.0f;                  // For capsule
-    bool IsTrigger = false;               // Trigger vs solid collider
+    glm::vec3 Center = glm::vec3(0.0f);     // Local offset from transform
     
-    // Physics properties (Phase 3)
-    glm::vec3 Velocity = glm::vec3(0.0f); // Linear velocity
-    bool IsDynamic = false;               // Affected by physics?
-    float Restitution = 0.75f;            // Bounce coefficient (0-1)
+    // Shape parameters (which ones are used depends on ColliderType)
+    glm::vec3 Size = glm::vec3(1.0f);       // Box: dimensions, Mesh: bounding box
+    float Radius = 0.5f;                     // Sphere/Capsule: radius
+    float Height = 2.0f;                     // Capsule: height along Y-axis
+    
+    // Collision behavior
+    bool IsTrigger = false;                  // If true, detects collision but doesn't block
+    
+    // Legacy physics properties (deprecated - use RigidbodyComponent instead)
+    glm::vec3 Velocity = glm::vec3(0.0f);   
+    bool IsDynamic = false;
+    float Restitution = 0.75f;
+    
+    /**
+     * @brief Validate that this collider has correct parameters
+     * Call this after setting up a collider to catch errors early
+     */
+    bool IsValid() const {
+        switch (ColliderType) {
+            case Type::Box:
+                return Size.x > 0.0f && Size.y > 0.0f && Size.z > 0.0f;
+            case Type::Sphere:
+                return Radius > 0.0f;
+            case Type::Capsule:
+                return Radius > 0.0f && Height > 0.0f;
+            case Type::Mesh:
+                return Size.x > 0.0f && Size.y > 0.0f && Size.z > 0.0f;
+            default:
+                return false;
+        }
+    }
 };
 
 // ============================================================================
