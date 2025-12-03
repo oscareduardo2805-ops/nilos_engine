@@ -176,10 +176,19 @@ void Engine::ProcessInput() {
     auto* camera = m_World->GetComponent<CameraComponent>(m_CameraEntity);
     
     if (transform && camera) {
-        float moveSpeed = 5.0f * Time::Get().GetDeltaTime();
+        float baseSpeed = 5.0f; // Base speed: 5 units per second
+        float speedMultiplier = 1.0f;
+        
+        // SPRINT MODE: Ctrl + Movement = 3x speed
+        if (Input::Get().IsKeyDown(GLFW_KEY_LEFT_CONTROL) || 
+            Input::Get().IsKeyDown(GLFW_KEY_RIGHT_CONTROL)) {
+            speedMultiplier = 3.0f;
+        }
+        
+        float moveSpeed = baseSpeed * speedMultiplier * Time::Get().GetDeltaTime();
         float rotationSpeed = 2.0f * Time::Get().GetDeltaTime();
 
-        // Movement
+        // Movement (WASD + Q/E for vertical)
         if (Input::Get().IsKeyDown(GLFW_KEY_W)) {
             transform->Position += camera->GetForward() * moveSpeed;
         }
@@ -281,12 +290,12 @@ void Engine::SetupDemoScene() {
     m_CameraEntity = m_World->CreateEntity("MainCamera");
     
     auto* cameraTransform = m_World->AddComponent<TransformComponent>(m_CameraEntity);
-    cameraTransform->Position = glm::vec3(0.0f, 2.5f, 7.0f);
+    cameraTransform->Position = glm::vec3(0.0f, 50.0f, 150.0f); // Higher and farther to see 1km plane
     
     auto* cameraComponent = m_World->AddComponent<CameraComponent>(m_CameraEntity);
-    cameraComponent->FOV = 60.0f;
+    cameraComponent->FOV = 70.0f;       // Wider FOV to see more
     cameraComponent->Near = 0.1f;
-    cameraComponent->Far = 100.0f;
+    cameraComponent->Far = 2000.0f;     // Far enough to see 1km plane
 
     // ========================================
     // GROUND (Static - Earth simulation with depth)
@@ -298,6 +307,8 @@ void Engine::SetupDemoScene() {
     
     auto* groundMesh = m_World->AddComponent<MeshComponent>(ground);
     groundMesh->CreateCube();
+    // Override color to be uniform green (grass)
+    groundMesh->Color = glm::vec3(0.2f, 0.6f, 0.2f);
     
     auto* groundCollider = m_World->AddComponent<ColliderComponent>(ground);
     groundCollider->ColliderType = ColliderComponent::Type::Box;
@@ -348,6 +359,7 @@ void Engine::SetupDemoScene() {
     leftRB->DynamicFriction = 0.5f;
     
     auto* leftCollider = m_World->AddComponent<ColliderComponent>(leftCube);
+    leftCollider->ColliderType = ColliderComponent::Type::Box;  // CRITICAL: Set collider type!
     leftCollider->Size = glm::vec3(1.0f);
     
     m_PhysicsWorld->RegisterRigidbody(leftRB, leftCollider, leftTransform);
@@ -369,6 +381,7 @@ void Engine::SetupDemoScene() {
     rightRB->DynamicFriction = 0.5f;
     
     auto* rightCollider = m_World->AddComponent<ColliderComponent>(rightCube);
+    rightCollider->ColliderType = ColliderComponent::Type::Box;  // CRITICAL: Set collider type!
     rightCollider->Size = glm::vec3(1.0f);
     
     m_PhysicsWorld->RegisterRigidbody(rightRB, rightCollider, rightTransform);
