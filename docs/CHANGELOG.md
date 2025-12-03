@@ -5,6 +5,48 @@ All notable changes to Nilos Engine will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2025-12-03
+
+### Added - Phase 2: Enhanced Rendering
+
+#### Texture System
+- **stb_image Integration**: Industry-standard image loading library
+- **Texture2D Class**: Complete texture management with filtering and wrapping
+- **TextureManager**: Automatic texture caching to prevent duplicate loads
+- **Mipmap Support**: Automatic mipmap generation for better quality at distance
+- **Multiple Formats**: RGB, RGBA, grayscale support
+
+#### Lighting System
+- **Phong Lighting Model**: Fast and simple lighting (Blinn-Phong variant)
+- **DirectionalLight**: Infinite distance sun-like lights with direction and color
+- **PointLight**: Local lights with position and attenuation (falloff)
+- **AmbientLight**: Global ambient illumination
+- **Per-Fragment Lighting**: Smooth lighting calculated per pixel
+
+#### Material System
+- **Simplified Materials**: Diffuse + Specular + Shininess (Phong model)
+- **Texture Mapping**: Support for diffuse, specular, and normal maps
+- **Material Component**: Easy-to-use material struct
+
+#### Vertex Format
+- **Enhanced Vertex Data**: Position(3) + Normal(3) + Color(3) + TexCoord(2)
+- **Normal Vectors**: Required for proper lighting calculations
+- **Texture Coordinates**: Ready for texture mapping
+
+### Changed
+- **Shaders**: Upgraded from basic vertex color to full Phong lighting
+- **Mesh Creation**: Cube mesh now includes face normals
+- **Renderer**: Now handles lighting uniforms and material properties
+- **Material Design**: Simplified from PBR to Phong for performance
+
+### Performance Notes
+- Deliberately kept simple (Phong instead of PBR) for maximum speed
+- Single-pass forward rendering
+- Optimized for 60+ FPS on integrated graphics
+- Lightweight texture management
+
+---
+
 ## [0.1.0] - 2025-12-03
 
 ### Added - Phase 1 Complete

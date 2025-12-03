@@ -32,9 +32,11 @@ void Input::Update() {
     m_PreviousMouseButtonStates = m_MouseButtonStates;
     m_PreviousMousePosition = m_MousePosition;
 
-    // Query current key states
-    for (size_t i = 0; i < MAX_KEYS; ++i) {
-        m_KeyStates[i] = glfwGetKey(m_Window, static_cast<int>(i)) == GLFW_PRESS;
+    // Query current key states (only valid GLFW keys: 32-348)
+    for (size_t i = GLFW_KEY_SPACE; i <= GLFW_KEY_LAST; ++i) {
+        if (i < MAX_KEYS) {
+            m_KeyStates[i] = glfwGetKey(m_Window, static_cast<int>(i)) == GLFW_PRESS;
+        }
     }
 
     // Query current mouse button states

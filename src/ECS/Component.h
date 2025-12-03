@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
+#include <string>
 #include <cstdint>
 
 namespace Nilos {
@@ -60,67 +61,67 @@ struct TransformComponent {
  * @brief Mesh component - renderable geometry data
  * 
  * Contains vertex data and GPU buffer IDs for rendering.
+ * Vertex format: Position(3) + Normal(3) + Color(3) + TexCoord(2) = 11 floats
  */
 struct MeshComponent {
-    std::vector<float> Vertices;
+    std::vector<float> Vertices;  // Interleaved vertex data
     std::vector<uint32_t> Indices;
     uint32_t VAO = 0; // Vertex Array Object
     uint32_t VBO = 0; // Vertex Buffer Object
     uint32_t EBO = 0; // Element Buffer Object
     glm::vec3 Color = glm::vec3(1.0f, 1.0f, 1.0f);
+    uint32_t MaterialID = 0; // Optional material reference
 
     /**
-     * @brief Create a simple cube mesh
+     * @brief Create a simple cube mesh with normals
      */
     void CreateCube() {
-        // Cube vertices (position + color)
-        // Each face has 4 vertices, each vertex has: position(3) + color(3)
+        // Cube with Position(3) + Normal(3) + Color(3) + TexCoord(2) = 11 floats per vertex
         Vertices = {
-            // Front face (red tint)
-            -0.5f, -0.5f,  0.5f,  1.0f, 0.2f, 0.2f,
-             0.5f, -0.5f,  0.5f,  1.0f, 0.2f, 0.2f,
-             0.5f,  0.5f,  0.5f,  1.0f, 0.2f, 0.2f,
-            -0.5f,  0.5f,  0.5f,  1.0f, 0.2f, 0.2f,
+            // Front face (normal = +Z)
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f,  0.8f, 0.2f, 0.2f,  0.0f, 0.0f,
+             0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f,  0.8f, 0.2f, 0.2f,  1.0f, 0.0f,
+             0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f,  0.8f, 0.2f, 0.2f,  1.0f, 1.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f,  0.8f, 0.2f, 0.2f,  0.0f, 1.0f,
             
-            // Back face (green tint)
-            -0.5f, -0.5f, -0.5f,  0.2f, 1.0f, 0.2f,
-             0.5f, -0.5f, -0.5f,  0.2f, 1.0f, 0.2f,
-             0.5f,  0.5f, -0.5f,  0.2f, 1.0f, 0.2f,
-            -0.5f,  0.5f, -0.5f,  0.2f, 1.0f, 0.2f,
+            // Back face (normal = -Z)
+             0.5f, -0.5f, -0.5f,  0.0f, 0.0f, -1.0f,  0.2f, 0.8f, 0.2f,  0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, -1.0f,  0.2f, 0.8f, 0.2f,  1.0f, 0.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f, 0.0f, -1.0f,  0.2f, 0.8f, 0.2f,  1.0f, 1.0f,
+             0.5f,  0.5f, -0.5f,  0.0f, 0.0f, -1.0f,  0.2f, 0.8f, 0.2f,  0.0f, 1.0f,
             
-            // Top face (blue tint)
-            -0.5f,  0.5f, -0.5f,  0.2f, 0.2f, 1.0f,
-             0.5f,  0.5f, -0.5f,  0.2f, 0.2f, 1.0f,
-             0.5f,  0.5f,  0.5f,  0.2f, 0.2f, 1.0f,
-            -0.5f,  0.5f,  0.5f,  0.2f, 0.2f, 1.0f,
+            // Top face (normal = +Y)
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f,  0.2f, 0.2f, 0.8f,  0.0f, 0.0f,
+             0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f,  0.2f, 0.2f, 0.8f,  1.0f, 0.0f,
+             0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,  0.2f, 0.2f, 0.8f,  1.0f, 1.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,  0.2f, 0.2f, 0.8f,  0.0f, 1.0f,
             
-            // Bottom face (yellow tint)
-            -0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.2f,
-             0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.2f,
-             0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 0.2f,
-            -0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 0.2f,
+            // Bottom face (normal = -Y)
+            -0.5f, -0.5f,  0.5f,  0.0f, -1.0f, 0.0f,  0.8f, 0.8f, 0.2f,  0.0f, 0.0f,
+             0.5f, -0.5f,  0.5f,  0.0f, -1.0f, 0.0f,  0.8f, 0.8f, 0.2f,  1.0f, 0.0f,
+             0.5f, -0.5f, -0.5f,  0.0f, -1.0f, 0.0f,  0.8f, 0.8f, 0.2f,  1.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, -1.0f, 0.0f,  0.8f, 0.8f, 0.2f,  0.0f, 1.0f,
             
-            // Right face (magenta tint)
-             0.5f, -0.5f, -0.5f,  1.0f, 0.2f, 1.0f,
-             0.5f,  0.5f, -0.5f,  1.0f, 0.2f, 1.0f,
-             0.5f,  0.5f,  0.5f,  1.0f, 0.2f, 1.0f,
-             0.5f, -0.5f,  0.5f,  1.0f, 0.2f, 1.0f,
+            // Right face (normal = +X)
+             0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f,  0.8f, 0.2f, 0.8f,  0.0f, 0.0f,
+             0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,  0.8f, 0.2f, 0.8f,  1.0f, 0.0f,
+             0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,  0.8f, 0.2f, 0.8f,  1.0f, 1.0f,
+             0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,  0.8f, 0.2f, 0.8f,  0.0f, 1.0f,
             
-            // Left face (cyan tint)
-            -0.5f, -0.5f, -0.5f,  0.2f, 1.0f, 1.0f,
-            -0.5f,  0.5f, -0.5f,  0.2f, 1.0f, 1.0f,
-            -0.5f,  0.5f,  0.5f,  0.2f, 1.0f, 1.0f,
-            -0.5f, -0.5f,  0.5f,  0.2f, 1.0f, 1.0f,
+            // Left face (normal = -X)
+            -0.5f, -0.5f, -0.5f,  -1.0f, 0.0f, 0.0f,  0.2f, 0.8f, 0.8f,  0.0f, 0.0f,
+            -0.5f,  0.5f, -0.5f,  -1.0f, 0.0f, 0.0f,  0.2f, 0.8f, 0.8f,  1.0f, 0.0f,
+            -0.5f,  0.5f,  0.5f,  -1.0f, 0.0f, 0.0f,  0.2f, 0.8f, 0.8f,  1.0f, 1.0f,
+            -0.5f, -0.5f,  0.5f,  -1.0f, 0.0f, 0.0f,  0.2f, 0.8f, 0.8f,  0.0f, 1.0f,
         };
 
-        // Cube indices (two triangles per face)
         Indices = {
             0,  1,  2,   2,  3,  0,   // Front
-            4,  7,  6,   6,  5,  4,   // Back
+            4,  5,  6,   6,  7,  4,   // Back
             8,  9, 10,  10, 11,  8,   // Top
-            12, 15, 14,  14, 13, 12,  // Bottom
+            12, 13, 14,  14, 15, 12,  // Bottom
             16, 17, 18,  18, 19, 16,  // Right
-            20, 23, 22,  22, 21, 20   // Left
+            20, 21, 22,  22, 23, 20   // Left
         };
     }
 

@@ -2,6 +2,7 @@
 
 #include "../ECS/Component.h"
 #include "Shader.h"
+#include "Light.h"
 #include <memory>
 
 namespace Nilos {
@@ -59,14 +60,28 @@ public:
      */
     void SetClearColor(float r, float g, float b, float a = 1.0f);
 
+    /**
+     * @brief Set directional light (sun)
+     */
+    void SetDirectionalLight(const DirectionalLight& light) { m_DirectionalLight = light; }
+
+    /**
+     * @brief Set ambient light
+     */
+    void SetAmbientLight(const AmbientLight& light) { m_AmbientLight = light; }
+
 private:
     /**
      * @brief Initialize mesh buffers (VAO, VBO, EBO)
      */
     void InitializeMeshBuffers(MeshComponent& mesh);
 
-    std::unique_ptr<Shader> m_BasicShader;
+    std::unique_ptr<Shader> m_PhongShader;
     glm::vec4 m_ClearColor;
+    
+    // Lighting
+    DirectionalLight m_DirectionalLight;
+    AmbientLight m_AmbientLight;
 };
 
 } // namespace Nilos

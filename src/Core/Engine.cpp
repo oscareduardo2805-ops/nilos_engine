@@ -10,6 +10,7 @@
 #include "../Events/EventManager.h"
 #include "../Events/Event.h"
 
+#include <GLFW/glfw3.h>
 #include <thread>
 
 namespace Nilos {
@@ -258,28 +259,62 @@ void Engine::Render() {
 }
 
 void Engine::SetupDemoScene() {
+    // Setup Phong lighting (Phase 2 feature)
+    DirectionalLight dirLight;
+    dirLight.Direction = glm::normalize(glm::vec3(-1.0f, -1.2f, -0.8f));
+    dirLight.Color = glm::vec3(1.0f, 0.95f, 0.85f); // Warm sunlight
+    dirLight.Intensity = 1.8f; // Stronger light to see effect
+    m_Renderer->SetDirectionalLight(dirLight);
+    
+    AmbientLight ambLight;
+    ambLight.Color = glm::vec3(0.15f, 0.18f, 0.25f); // Cool ambient
+    ambLight.Intensity = 0.2f; // Low ambient for dramatic lighting
+    m_Renderer->SetAmbientLight(ambLight);
+    
+    NILOS_INFO("Phong lighting configured: Directional + Ambient");
+    
     // Create camera entity
     m_CameraEntity = m_World->CreateEntity("MainCamera");
     
     auto* cameraTransform = m_World->AddComponent<TransformComponent>(m_CameraEntity);
-    cameraTransform->Position = glm::vec3(0.0f, 2.0f, 5.0f);
+    cameraTransform->Position = glm::vec3(0.0f, 2.5f, 7.0f);
     
     auto* cameraComponent = m_World->AddComponent<CameraComponent>(m_CameraEntity);
     cameraComponent->FOV = 60.0f;
     cameraComponent->Near = 0.1f;
     cameraComponent->Far = 100.0f;
 
-    // Create a simple cube entity
+    // Create center cube (rotating to show lighting)
     m_CubeEntity = m_World->CreateEntity("DemoCube");
     
     auto* cubeTransform = m_World->AddComponent<TransformComponent>(m_CubeEntity);
     cubeTransform->Position = glm::vec3(0.0f, 0.0f, 0.0f);
-    cubeTransform->Scale = glm::vec3(1.0f);
+    cubeTransform->Scale = glm::vec3(1.5f);
     
     auto* cubeMesh = m_World->AddComponent<MeshComponent>(m_CubeEntity);
-    cubeMesh->CreateCube(); // Helper method to create cube geometry
+    cubeMesh->CreateCube();
     
-    NILOS_INFO("Demo scene setup: Camera and Cube created");
+    // Add more cubes to showcase lighting
+    Entity leftCube = m_World->CreateEntity("LeftCube");
+    auto* leftTransform = m_World->AddComponent<TransformComponent>(leftCube);
+    leftTransform->Position = glm::vec3(-3.5f, 0.0f, -1.0f);
+    leftTransform->Scale = glm::vec3(1.0f);
+    m_World->AddComponent<MeshComponent>(leftCube)->CreateCube();
+    
+    Entity rightCube = m_World->CreateEntity("RightCube");
+    auto* rightTransform = m_World->AddComponent<TransformComponent>(rightCube);
+    rightTransform->Position = glm::vec3(3.5f, 0.0f, -1.0f);
+    rightTransform->Scale = glm::vec3(1.0f);
+    m_World->AddComponent<MeshComponent>(rightCube)->CreateCube();
+    
+    // Ground plane (to see shadows effect)
+    Entity ground = m_World->CreateEntity("Ground");
+    auto* groundTransform = m_World->AddComponent<TransformComponent>(ground);
+    groundTransform->Position = glm::vec3(0.0f, -2.5f, 0.0f);
+    groundTransform->Scale = glm::vec3(15.0f, 0.2f, 15.0f);
+    m_World->AddComponent<MeshComponent>(ground)->CreateCube();
+    
+    NILOS_INFO("Phase 2 demo scene created with Phong lighting!");
 }
 
 } // namespace Nilos

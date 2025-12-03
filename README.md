@@ -57,22 +57,24 @@ Nilos Engine/
 
 ## Roadmap
 
-### Phase 1 ✅ (Current)
+### Phase 1 ✅ (Complete)
 - [x] Basic 3D rendering
 - [x] ECS architecture
 - [x] Camera and input
 - [x] Event system
 
-### Phase 2 (Next)
-- [ ] Model loading (GLTF, OBJ)
-- [ ] PBR materials
-- [ ] Lighting and shadows
+### Phase 2 ✅ (Complete)
+- [x] Texture system (stb_image)
+- [x] Phong lighting (simple & fast)
+- [x] Material system
+- [x] Optimized rendering
 
-### Phase 3
-- [ ] Physics integration (PhysX/Bullet)
-- [ ] Collision detection
+### Phase 3 (Next)
+- [ ] Model loading (GLTF/OBJ with Assimp)
+- [ ] Physics integration (simple collisions)
+- [ ] Particle system
 
-### Phase 5
+### Phase 4
 - [ ] AI systems (Behavior trees, GOAP)
 - [ ] External AI API integration
 - [ ] NPC perception and memory

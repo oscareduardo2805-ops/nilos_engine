@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(NilosEngine VERSION 0.1.0 LANGUAGES CXX)
+project(NilosEngine VERSION 0.1.0 LANGUAGES C CXX)
 
 # Set C++17 standard
 set(CMAKE_CXX_STANDARD 17)
@@ -23,13 +23,15 @@ find_package(glm REQUIRED)
 # Source files
 file(GLOB_RECURSE NILOS_SOURCES 
     "src/Core/*.cpp"
-    "src/ECS/*.cpp"
-    "src/Events/*.cpp"
     "src/Rendering/*.cpp"
     "src/Window/*.cpp"
     "src/Input/*.cpp"
-    "src/Physics/*.cpp"
-    "src/AI/*.cpp"
+)
+
+# Add Mesh.cpp explicitly (it's in Rendering but might be missed)
+list(APPEND NILOS_SOURCES 
+    "src/Rendering/Mesh.cpp"
+    "src/Rendering/Texture.cpp"
 )
 
 file(GLOB_RECURSE NILOS_HEADERS 

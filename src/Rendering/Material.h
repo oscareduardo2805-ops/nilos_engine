@@ -1,32 +1,30 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include <memory>
+#include <cstdint>
 
 namespace Nilos {
 
-// Forward declaration
-class Shader;
-
 /**
- * @brief Material properties (Placeholder for Phase 2)
+ * @brief Simple material with Phong lighting
  * 
- * In Phase 2, this will be expanded to include:
- * - PBR properties (metallic, roughness, etc.)
- * - Texture maps (albedo, normal, metallic, roughness, AO)
- * - Shader variants
+ * Lightweight material for fast rendering.
+ * Supports basic textures and Phong lighting model.
  */
 struct Material {
-    glm::vec3 Albedo = glm::vec3(1.0f);
-    float Metallic = 0.0f;
-    float Roughness = 0.5f;
-    float AO = 1.0f; // Ambient Occlusion
+    // Color properties
+    glm::vec3 Diffuse = glm::vec3(0.8f);
+    glm::vec3 Specular = glm::vec3(0.5f);
+    float Shininess = 32.0f;
     
-    // Future: texture IDs
-    // uint32_t AlbedoMap = 0;
-    // uint32_t NormalMap = 0;
-    // uint32_t MetallicMap = 0;
-    // uint32_t RoughnessMap = 0;
+    // Texture IDs (0 = no texture)
+    uint32_t DiffuseMap = 0;
+    uint32_t SpecularMap = 0;
+    uint32_t NormalMap = 0;
+    
+    bool HasDiffuseMap() const { return DiffuseMap != 0; }
+    bool HasSpecularMap() const { return SpecularMap != 0; }
+    bool HasNormalMap() const { return NormalMap != 0; }
 };
 
 } // namespace Nilos

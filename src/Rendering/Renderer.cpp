@@ -13,53 +13,32 @@ Renderer::~Renderer() {
 bool Renderer::Initialize() {
     NILOS_INFO("Initializing renderer...");
 
-    // Set clear color (nice blue-gray)
+    // Set clear color
     m_ClearColor = glm::vec4(0.1f, 0.15f, 0.2f, 1.0f);
 
-    // Create basic shader
-    m_BasicShader = std::make_unique<Shader>();
-    
-    // Basic shader source (embedded for simplicity, will be moved to files)
-    std::string vertexSource = R"(
-        #version 330 core
-        layout (location = 0) in vec3 aPos;
-        layout (location = 1) in vec3 aColor;
-        
-        out vec3 FragColor;
-        
-        uniform mat4 uModel;
-        uniform mat4 uView;
-        uniform mat4 uProjection;
-        
-        void main() {
-            gl_Position = uProjection * uView * uModel * vec4(aPos, 1.0);
-            FragColor = aColor;
-        }
-    )";
-    
-    std::string fragmentSource = R"(
-        #version 330 core
-        in vec3 FragColor;
-        out vec4 FinalColor;
-        
-        void main() {
-            FinalColor = vec4(FragColor, 1.0);
-        }
-    )";
-    
-    if (!m_BasicShader->LoadFromSource(vertexSource, fragmentSource)) {
-        NILOS_ERROR("Failed to create basic shader");
+    // Load Phong shader
+    m_PhongShader = std::make_unique<Shader>();
+    if (!m_PhongShader->LoadFromFiles("assets/shaders/phong.vert", "assets/shaders/phong.frag")) {
+        NILOS_ERROR("Failed to load Phong shader");
         return false;
     }
+
+    // Setup default lighting (will be overridden by scene)
+    m_DirectionalLight.Direction = glm::normalize(glm::vec3(-1.0f, -1.0f, -0.5f));
+    m_DirectionalLight.Color = glm::vec3(1.0f, 0.95f, 0.9f);
+    m_DirectionalLight.Intensity = 1.2f;
+
+    m_AmbientLight.Color = glm::vec3(0.15f, 0.2f, 0.25f);
+    m_AmbientLight.Intensity = 0.3f;
 
     NILOS_INFO("Renderer initialized successfully");
     return true;
 }
 
 void Renderer::Shutdown() {
-    if (m_BasicShader) {
-        m_BasicShader->Delete();
-        m_BasicShader.reset();
+    if (m_PhongShader) {
+        m_PhongShader->Delete();
+        m_PhongShader.reset();
     }
     NILOS_INFO("Renderer shutdown");
 }
@@ -85,16 +64,31 @@ void Renderer::RenderMesh(MeshComponent& mesh,
     }
 
     // Use shader
-    m_BasicShader->Use();
+    m_PhongShader->Use();
 
     // Set matrices
     glm::mat4 model = transform.GetModelMatrix();
     glm::mat4 view = camera.GetViewMatrix(cameraTransform.Position);
     glm::mat4 projection = camera.ProjectionMatrix;
+    glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(model)));
 
-    m_BasicShader->SetMat4("uModel", model);
-    m_BasicShader->SetMat4("uView", view);
-    m_BasicShader->SetMat4("uProjection", projection);
+    m_PhongShader->SetMat4("uModel", model);
+    m_PhongShader->SetMat4("uView", view);
+    m_PhongShader->SetMat4("uProjection", projection);
+    m_PhongShader->SetMat3("uNormalMatrix", normalMatrix);
+
+    // Set material (simple default)
+    m_PhongShader->SetVec3("uMaterialDiffuse", glm::vec3(1.0f));
+    m_PhongShader->SetVec3("uMaterialSpecular", glm::vec3(0.3f));
+    m_PhongShader->SetFloat("uMaterialShininess", 32.0f);
+    m_PhongShader->SetInt("uUseDiffuseMap", 0);
+
+    // Set lighting
+    m_PhongShader->SetVec3("uLightDir", m_DirectionalLight.Direction);
+    m_PhongShader->SetVec3("uLightColor", m_DirectionalLight.Color);
+    m_PhongShader->SetFloat("uLightIntensity", m_DirectionalLight.Intensity);
+    m_PhongShader->SetVec3("uAmbientLight", m_AmbientLight.Color * m_AmbientLight.Intensity);
+    m_PhongShader->SetVec3("uViewPos", cameraTransform.Position);
 
     // Bind VAO and draw
     glBindVertexArray(mesh.VAO);
@@ -129,14 +123,24 @@ void Renderer::InitializeMeshBuffers(MeshComponent& mesh) {
                  mesh.Indices.data(), 
                  GL_STATIC_DRAW);
 
-    // Configure vertex attributes
-    // Position attribute (location = 0)
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    // Vertex format: Position(3) + Normal(3) + Color(3) + TexCoord(2) = 11 floats
+    size_t stride = 11 * sizeof(float);
+
+    // Position (location = 0)
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
     glEnableVertexAttribArray(0);
 
-    // Color attribute (location = 1)
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    // Normal (location = 1)
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+
+    // Color (location = 2)
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+
+    // TexCoord (location = 3)
+    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, stride, (void*)(9 * sizeof(float)));
+    glEnableVertexAttribArray(3);
 
     // Unbind
     glBindVertexArray(0);
