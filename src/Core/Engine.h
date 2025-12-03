@@ -9,6 +9,7 @@ namespace Nilos {
 class Window;
 class Renderer;
 class World;
+class PhysicsWorld;
 
 /**
  * @brief Engine configuration structure
@@ -110,6 +111,7 @@ private:
     std::unique_ptr<Window> m_Window;
     std::unique_ptr<Renderer> m_Renderer;
     std::unique_ptr<World> m_World;
+    std::unique_ptr<PhysicsWorld> m_PhysicsWorld;
 
     // Demo scene entities (Phase 1)
     uint32_t m_CameraEntity;

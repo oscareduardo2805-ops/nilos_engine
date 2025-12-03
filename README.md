@@ -69,10 +69,16 @@ Nilos Engine/
 - [x] Material system
 - [x] Optimized rendering
 
-### Phase 3 (Next)
-- [ ] Model loading (GLTF/OBJ with Assimp)
-- [ ] Physics integration (simple collisions)
-- [ ] Particle system
+### Phase 3 ✅ (Complete)
+- [x] AABB collision system
+- [x] Physics world (gravity, collisions)
+- [x] Pathfinding (A* algorithm)
+- [x] Model loader foundation
+
+### Phase 4 (Next)
+- [ ] AI Behavior Trees
+- [ ] Goal-Oriented Action Planning (GOAP)
+- [ ] NPC perception system
 
 ### Phase 4
 - [ ] AI systems (Behavior trees, GOAP)

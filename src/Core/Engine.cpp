@@ -9,6 +9,7 @@
 #include "../Input/Input.h"
 #include "../Events/EventManager.h"
 #include "../Events/Event.h"
+#include "../Physics/PhysicsWorld.h"
 
 #include <GLFW/glfw3.h>
 #include <thread>
@@ -72,6 +73,11 @@ bool Engine::Initialize() {
     m_World = std::make_unique<World>();
     m_World->Initialize();
     NILOS_INFO("ECS World initialized");
+
+    // Initialize Physics World (Phase 3)
+    m_PhysicsWorld = std::make_unique<PhysicsWorld>();
+    m_PhysicsWorld->SetGravity(glm::vec3(0.0f, -9.81f, 0.0f));
+    NILOS_INFO("Physics World initialized");
 
     // Setup demo scene
     SetupDemoScene();
@@ -209,6 +215,9 @@ void Engine::ProcessInput() {
 void Engine::Update(float deltaTime) {
     // Update ECS world (all registered systems)
     m_World->Update(deltaTime);
+
+    // Update physics (Phase 3)
+    m_PhysicsWorld->Update(deltaTime);
 
     // Update camera
     auto* camera = m_World->GetComponent<CameraComponent>(m_CameraEntity);

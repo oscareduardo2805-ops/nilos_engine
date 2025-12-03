@@ -26,12 +26,8 @@ file(GLOB_RECURSE NILOS_SOURCES
     "src/Rendering/*.cpp"
     "src/Window/*.cpp"
     "src/Input/*.cpp"
-)
-
-# Add Mesh.cpp explicitly (it's in Rendering but might be missed)
-list(APPEND NILOS_SOURCES 
-    "src/Rendering/Mesh.cpp"
-    "src/Rendering/Texture.cpp"
+    "src/Physics/*.cpp"
+    "src/AI/*.cpp"
 )
 
 file(GLOB_RECURSE NILOS_HEADERS 
